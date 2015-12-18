@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>微信支付Demo</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=0">
+  <link rel="stylesheet" href="http://203.195.235.76/jssdk/css/style.css">
+</head>
+<body ontouchstart="">
+  <div class="wxapi_container">
+    <div class="lbox_close wxapi_form">
+      <span class="desc">发起一个微信支付请求</span>
+      <button class="btn btn_primary" id="chooseWXPay">支付</button>
+    </div>
+  </div>
+</body>
+
+<script src="http://res.wx.qq.com/open/js/jweixin-1.0.0.js"></script>
+<script>
+  wx.config({
+      debug: false,
+      appId: '{{appId}}',
+      timestamp: {{timestamp}},
+      nonceStr: '{{nonceStr}}',
+      signature: '{{signature}}',
+      jsApiList: [
+        'chooseWXPay'
+      ]
+  });
+</script>
+<script>
+
+wx.ready(function () {
+  document.querySelector('#chooseWXPay').onclick = function () {
+
+
+  var xmlhttp;
+  if (window.XMLHttpRequest){// code for IE7+, Firefox, Chrome, Opera, Safari
+    xmlhttp=new XMLHttpRequest();}
+  else{// code for IE6, IE5
+    xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");}
+  xmlhttp.onreadystatechange=function()
+  {
+    // alert(xmlhttp.readyState);
+    // alert(xmlhttp.status);
+    if (xmlhttp.readyState==4 && xmlhttp.status==200) {
+      var result = xmlhttp.responseText;
+      eval("var movie = " + result);
+      wx.chooseWXPay({
+          timestamp: movie.timeStamp, // 支付签名时间戳，注意微信jssdk中的所有使用timestamp字段均为小写。
+                    // 但最新版的支付后台生成签名使用的timeStamp字段名需大写其中的S字符
+          nonceStr: movie.nonceStr, // 支付签名随机串，不长于 32 位
+          package: movie.package, // 统一支付接口返回的prepay_id参数值，提交格式如：prepay_id=***）
+          signType: movie.signType, // 签名方式，默认为'SHA1'，使用新版支付需传入'MD5'
+          paySign: movie.paySign, // 支付签名
+          success: function (res) {
+              alert('支付成功！');
+          },
+          fail: function (res) {
+          },
+          cancel: function (res) {
+          }
+      });
+    }
+  }
+  xmlhttp.open("GET","http://www.itcastcpp.cn/wechat/unified_order/?openid={{ user_openid }}&money={{doctor.charging}}&doctor_id={{doctor.id}}",true);
+  xmlhttp.send();
+
+
+  };
+});
+
+wx.error(function (res) {
+  alert(res.errMsg);
+});
+
+</script>
+</html>

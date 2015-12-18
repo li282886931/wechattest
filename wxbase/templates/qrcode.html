@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<style>
+body
+{
+  text-align:center; 
+  margin:0 atuto;
+}
+</style>
+<html>
+    <head>
+        <title>二维码</title>
+    </head>
+
+    <body>
+        <h3>第{{ num }}号二维码</h3>
+
+        <div>
+            <img src="https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket={{ ticket }}" 
+                alt="微信二维码">
+        </div>
+        <h4>您也可以使用下方链接，通过其他方式生成二维码</h4>
+        <h5>{{ url }}</h5>
+    </body>
+
+</html>

@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>user info</title>
+</head>
+
+<body>
+    <h1>用户信息</h1>
+
+    {% if headimgurl %}
+    <img border="0" src="{{ headimgurl }}" alt="headimg" /><br />
+    {% endif %}
+
+    {% if openid %}
+    <strong>open_id: </strong>{{ openid }}<br />
+    {% endif %}
+
+    {% if access_token %}
+    <strong>access_token: </strong>{{ access_token }}<br />
+    {% endif %}
+    
+    {% if refresh_token %}
+    <strong>refresh_token: </strong>{{ refresh_token }}<br />
+    {% endif %}
+
+    {% if nickname  %}
+    <strong>nickname : </strong>{{ nickname  }}<br />
+    {% endif %}
+
+    {% if sex %}
+    <strong>sex: </strong>{% if sex == 1 %}男{% else %}女{% endif %}<br />
+    {% endif %}
+
+    {% if province %}
+    <strong>province: </strong>{{ province }}<br />
+    {% endif %}
+
+    {% if city %}
+    <strong>city: </strong>{{ city }}<br />
+    {% endif %}
+
+    {% if country %}
+    <strong>country: </strong>{{ country }}<br />
+    {% endif %}
+
+    {% if privilege %}
+    <strong>privilege: </strong><ul>
+            {% for mem in privilege %}
+            <li>{{ mem }}</li>
+            {% endfor %}
+        </ul><br />
+    {% endif %}
+
+    {% if unionid %}
+    <strong>unionid: </strong>{{ unionid }}<br />
+    {% endif %}
+
+    <div>
+      <span>发起一个微信支付请求</span>
+      <button id="chooseWXPay">支付demo</button>
+    </div>
+    
+</body>
+
+<script src="http://res.wx.qq.com/open/js/jweixin-1.0.0.js"></script>
+<script>
+  wx.config({
+      debug: false,
+      appId: '{{appId}}',
+      timestamp: {{timestamp}},
+      nonceStr: '{{nonceStr}}',
+      signature: '{{signature}}',
+      jsApiList: [
+        'chooseWXPay'
+      ]
+  });
+</script>
+<script>
+
+wx.ready(function () {
+  document.querySelector('#chooseWXPay').onclick = function () {
+
+  var xmlhttp;
+  if (window.XMLHttpRequest){// code for IE7+, Firefox, Chrome, Opera, Safari
+    xmlhttp=new XMLHttpRequest();}
+  else{// code for IE6, IE5
+    xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");}
+  xmlhttp.onreadystatechange=function()
+  {
+    // alert(xmlhttp.readyState);
+    // alert(xmlhttp.status);
+    if (xmlhttp.readyState==4 && xmlhttp.status==200) {
+      var result = xmlhttp.responseText;
+      eval("var movie = " + result);
+      wx.chooseWXPay({
+          timestamp: movie.timeStamp, // 支付签名时间戳，注意微信jssdk中的所有使用timestamp字段均为小写。
+                    // 但最新版的支付后台生成签名使用的timeStamp字段名需大写其中的S字符
+          nonceStr: movie.nonceStr, // 支付签名随机串，不长于 32 位
+          package: movie.package, // 统一支付接口返回的prepay_id参数值，提交格式如：prepay_id=***）
+          signType: movie.signType, // 签名方式，默认为'SHA1'，使用新版支付需传入'MD5'
+          paySign: movie.paySign, // 支付签名
+          success: function (res) {
+              alert('支付成功！');
+          },
+          fail: function (res) {
+          },
+          cancel: function (res) {
+          }
+      });
+    }
+  }
+  xmlhttp.open("GET","http://www.itcastcpp.cn/wangteng/pay/?openid={{ openid }}",true);
+  xmlhttp.send();
+
+
+  };
+});
+
+wx.error(function (res) {
+  alert(res.errMsg);
+});
+
+</script>
+</html>
